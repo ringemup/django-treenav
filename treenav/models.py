@@ -215,7 +215,11 @@ def treenav_save_other_object_handler(sender, instance, created, **kwargs):
         ct = ContentType.objects.get_for_model(sender)
         items = MenuItem.objects.filter(content_type=ct, object_id=instance.pk)
         for item in items:
-            if item.href != instance.get_absolute_url():
-                item.href = instance.get_absolute_url()
+            try:
+                item_url = instance.get_absolute_url()
+            except AttributeError:
+                pass
+            else:
+                item.href = item_url
                 item.save()
 post_save.connect(treenav_save_other_object_handler)
